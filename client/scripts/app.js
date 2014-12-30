@@ -14,16 +14,12 @@ var retrieve = function(){
     success: function (data) {
       for(var message in data.results){
         if (data.results[message].text !== undefined){
-          var escape = data.results[message].text.replace(/[&<>"'` !@$%()=+{}\[\]]/g, '\\');
-
+          var escapeText = data.results[message].text.replace(/[&<>"'` !@$%()=+{}\[\]]/g, '\\');
         }
-        // if(data.results[message].text.slice(-9) === '</script>' || data.results[message].text.slice(-10, -1) === '</script>' ){
-        //   var cut = data.results[message].text.slice(0, -9);
-        //   cut += '<script>';
-        //   data.results[message].text = cut;
-        // }
-        var $div = $('<div>'+ escape + ' by ' + data.results[message].username + '</div>').addClass('main');
-        console.log(escape);
+        if (data.results[message].username !== undefined){
+          var escapeName = data.results[message].username.replace(/[&<>"'` !@$%()=+{}\[\]]/g, '\\');
+        }
+        var $div = $('<div>'+ escapeText + ' by ' + escapeName + '</div>').addClass('main');
         $('#main').append($div);
       }
       console.log('chatterbox: Message retrieved');
@@ -55,15 +51,11 @@ var send = function(message){
 };
 
 $(document).ready(function(event){
-  //event.preventDefault();
-// Prompt the user to enter a username
+
   name = prompt( "What is your name?" );
   $('#title').text(name + "\'s Chatterbox");
 
-// Save the username into message
   message.username = name;
-
-// Retrieve data from Parse API on page load;
   retrieve();
 
 // Refresh diplayed messages every 3 seconds
@@ -72,7 +64,6 @@ $(document).ready(function(event){
   //   retrieve();
   // },3000);
 
-// Listen for button click
   $('.chat').on('click', function(){
     message.text = $('input').val(); // return value of text
     $('input').val('');

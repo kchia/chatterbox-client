@@ -8,16 +8,24 @@ var message = {};
 var retrieve = function(){
 
   $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox',
+    url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
     type: 'GET',
     contentType: 'application/json',
     success: function (data) {
       for(var message in data.results){
+        //console.log(data.results[message].text.slice(-9));
+        if(data.results[message].text.slice(-9) === '</script>' || data.results[message].text.slice(-10, -1) === '</script>' ){
+          var cut = data.results[message].text.slice(0, -9);
+          cut += '<script>';
+          console.log(cut);
+
+          data.results[message].text = cut;
+        }
         var $div = $('<div>'+ data.results[message].text + ' by ' + data.results[message].username + '</div>').addClass('main');
+        console.log(data.results[message].text);
         $('#main').append($div);
       }
       console.log('chatterbox: Message retrieved');
-      console.log(data.results[0].createdAt - new Date());
     },
     error: function (data) {
       console.error('chatterbox: Failed to retrieve message');
@@ -69,33 +77,35 @@ $(document).ready(function(event){
     $('input').val('');
     $('.main').html('');
     message.roomname = '';
-    console.log(message);
     send(message);
     retrieve();
   });
 
   $('.users').on('click', function(){
     $.ajax({
-    url: 'https://api.parse.com/1/classes/chatterbox',
-    type: 'GET',
-    contentType: 'application/json',
-    success: function (data) {
-      $('.main').remove();
-      var names = {}
-      for(var message in data.results){
-        names[data.results[message].username] = data.results[message].username
+      url: 'https://api.parse.com/1/classes/chatterbox',
+      type: 'GET',
+      contentType: 'application/json',
+      success: function (data) {
+        $('.main').remove();
+        var names = {}
+        for(var message in data.results){
+          names[data.results[message].username] = data.results[message].username
+        }
+        for (var name in names){
+          var $div = $('<div>'+ '"' + name + '"' + '</div>').addClass('main').addClass(name);
+          $('#main').append($div);
+        }
+        console.log('chatterbox: Message retrieved');
+      },
+      error: function (data) {
+        console.error('chatterbox: Failed to retrieve message');
       }
-      for (var name in names){
-        var $div = $('<div>'+ name + '</div>').addClass('main').addClass(name);
-        $('#main').append($div);
-      }
-      console.log('chatterbox: Message retrieved');
-      console.log(data.results[0].createdAt - new Date());
-    },
-    error: function (data) {
-      console.error('chatterbox: Failed to retrieve message');
-    }
+    });
   });
+
+  $('h1').on('click', 'div', function(){
+
   })
 
 });
@@ -103,7 +113,7 @@ $(document).ready(function(event){
 
 
 
-
+//<script> $('body').css('background-color', 'red') </script>
 
 
 

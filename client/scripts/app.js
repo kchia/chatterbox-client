@@ -4,6 +4,8 @@ var name;
 // Create a message object, containing username, text, and roomname keys
 var message = {};
 
+var friends = {};
+
 // Retrieve data from Parse API
 var retrieve = function(){
 
@@ -75,7 +77,7 @@ $(document).ready(function(event){
 
   $('.users').on('click', function(){
     $.ajax({
-      url: 'https://api.parse.com/1/classes/chatterbox',
+      url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
       type: 'GET',
       contentType: 'application/json',
       success: function (data) {
@@ -85,7 +87,7 @@ $(document).ready(function(event){
           names[data.results[message].username] = data.results[message].username
         }
         for (var name in names){
-          var $div = $('<div>'+ '"' + name + '"' + '</div>').addClass('main').addClass(name);
+          var $div = $('<div>'+ name + '</div>').addClass('main').attr('id', name).addClass('user');
           $('#main').append($div);
         }
         console.log('chatterbox: Message retrieved');
@@ -96,12 +98,93 @@ $(document).ready(function(event){
     });
   });
 
-  $('h1').on('click', 'div', function(){
+  $('.room').on('click', function(){
+    $.ajax({
+      url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
+      type: 'GET',
+      contentType: 'application/json',
+      success: function (data) {
+        $('.main').remove();
+        var rooms = {}
+        for(var message in data.results){
+          rooms[data.results[message].roomname] = data.results[message].roomname
+        }
+        for (var room in rooms){
+          var $div = $('<div>' + room + '</div>').addClass('main').attr('id', room).addClass('room');
+          $('#main').append($div);
+        }
+        console.log('chatterbox: Message retrieved');
+      },
+      error: function (data) {
+        console.error('chatterbox: Failed to retrieve message');
+      }
+    });
+  });
 
-  })
+  $('#main').on('click', '.room', function(){
+    var room = $(this).attr('id');
+    var roomTitle = $("<p>Welcome to " + room + "!</p>").addClass('main');
+    $('.main').remove();
+    $('h1').append(roomTitle);
+    // console.log(room);
+    $.ajax({
+      url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
+      type: 'GET',
+      contentType: 'application/json',
+      success: function (data) {
+        var messages = {};
+        for(var message in data.results){
+          if (data.results[message].roomname === room){
+            messages[data.results[message].text] = data.results[message].text;
+          }
+        }
+        for (var message in messages){
+          var $div = $('<div>' + message + '</div>').addClass('main').attr('id', room);
+          $('#main').append($div);
+        }
+        console.log('chatterbox: Message retrieved');
+      },
+      error: function (data) {
+        console.error('chatterbox: Failed to retrieve message');
+      }
+    });
+  });
+
+  $('#main').on('click', '.user', function(){
+    var user = $(this).attr('id');
+    friends[user] = user;
+    $(this).css('background-color','red');
+    console.log(friends);
+  });
+
+  $('.friends').on('click', function(){
+    $('.main').remove();
+    $.ajax({
+      url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
+      type: 'GET',
+      contentType: 'application/json',
+      success: function (data) {
+        for(var message in data.results){
+          if (friends.hasOwnProperty(data.results[message].username)){
+            if (data.results[message].text !== undefined){
+              var escapeText = data.results[message].text.replace(/[&<>"'` !@$%()=+{}\[\]]/g, '\\');
+            }
+            if (data.results[message].username !== undefined){
+              var escapeName = data.results[message].username.replace(/[&<>"'` !@$%()=+{}\[\]]/g, '\\');
+            }
+            var $div = $('<div>'+ escapeText + ' by ' + escapeName + '</div>').addClass('main');
+            $('#main').append($div);
+          }
+        }
+        console.log('chatterbox: Message retrieved');
+      },
+      error: function (data) {
+        console.error('chatterbox: Failed to retrieve message');
+      }
+    });
+  });
 
 });
-
 
 
 

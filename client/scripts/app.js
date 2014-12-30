@@ -13,16 +13,17 @@ var retrieve = function(){
     contentType: 'application/json',
     success: function (data) {
       for(var message in data.results){
-        //console.log(data.results[message].text.slice(-9));
-        if(data.results[message].text.slice(-9) === '</script>' || data.results[message].text.slice(-10, -1) === '</script>' ){
-          var cut = data.results[message].text.slice(0, -9);
-          cut += '<script>';
-          console.log(cut);
+        if (data.results[message].text !== undefined){
+          var escape = data.results[message].text.replace(/[&<>"'` !@$%()=+{}\[\]]/g, '\\');
 
-          data.results[message].text = cut;
         }
-        var $div = $('<div>'+ data.results[message].text + ' by ' + data.results[message].username + '</div>').addClass('main');
-        console.log(data.results[message].text);
+        // if(data.results[message].text.slice(-9) === '</script>' || data.results[message].text.slice(-10, -1) === '</script>' ){
+        //   var cut = data.results[message].text.slice(0, -9);
+        //   cut += '<script>';
+        //   data.results[message].text = cut;
+        // }
+        var $div = $('<div>'+ escape + ' by ' + data.results[message].username + '</div>').addClass('main');
+        console.log(escape);
         $('#main').append($div);
       }
       console.log('chatterbox: Message retrieved');

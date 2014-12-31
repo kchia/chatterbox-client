@@ -17,13 +17,18 @@ var retrieve = function(){
     success: function (data) {
       for(var message in data.results){
         if (data.results[message].text !== undefined){
-          var escapeText = data.results[message].text.replace(/[&<>"'` !@$%()=+{}\[\]]/g, '\\');
+          var escapeText = data.results[message].text.replace(/[&<>"'`!@$%()=+{}\[\]]/g, '\\');
         }
         if (data.results[message].username !== undefined){
-          var escapeName = data.results[message].username.replace(/[&<>"'` !@$%()=+{}\[\]]/g, '\\');
+          var escapeName = data.results[message].username.replace(/[&<>"'`!@$%()=+{}\[\]]/g, '\\');
         }
-        var $div = $('<div>'+ escapeText + ' by ' + escapeName + '</div>').addClass('main');
-        $('#main').append($div);
+        if (escapeName in friends){
+         var $div = $('<div>'+ escapeText + ' by <em><strong>' + escapeName + '</strong></em></div>').addClass('main');
+         $('#main').append($div);
+        } else {
+          var $div = $('<div>'+ escapeText + ' by ' + escapeName + '</div>').addClass('main');
+          $('#main').append($div);
+       }
       }
       console.log('chatterbox: Message retrieved');
     },

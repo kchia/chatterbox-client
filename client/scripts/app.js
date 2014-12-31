@@ -3,6 +3,7 @@ var name;
 
 // Create a message object, containing username, text, and roomname keys
 var message = {};
+//message.roomname = '';
 
 var friends = {};
 
@@ -60,17 +61,10 @@ $(document).ready(function(event){
   message.username = name;
   retrieve();
 
-// Refresh diplayed messages every 3 seconds
-  // setInterval(function(){
-  //   $('.main').html('');
-  //   retrieve();
-  // },3000);
-
   $('.chat').on('click', function(){
     message.text = $('input').val(); // return value of text
     $('input').val('');
     $('.main').html('');
-    message.roomname = '';
     send(message);
     retrieve();
   });
@@ -99,6 +93,7 @@ $(document).ready(function(event){
   });
 
   $('.room').on('click', function(){
+
     $.ajax({
       url: 'https://api.parse.com/1/classes/chatterbox?order=-createdAt',
       type: 'GET',
@@ -107,10 +102,12 @@ $(document).ready(function(event){
         $('.main').remove();
         var rooms = {}
         for(var message in data.results){
-          rooms[data.results[message].roomname] = data.results[message].roomname
+          if (data.results[message].roomname !== '' && data.results[message].roomname !== undefined){
+            rooms[data.results[message].roomname] = data.results[message].roomname;
+          }
         }
         for (var room in rooms){
-          var $div = $('<div>' + room + '</div>').addClass('main').attr('id', room).addClass('room');
+          var $div = $('<div>' + room + '</div>').addClass('main').attr('id', room).addClass('rooms');
           $('#main').append($div);
         }
         console.log('chatterbox: Message retrieved');
@@ -121,8 +118,12 @@ $(document).ready(function(event){
     });
   });
 
-  $('#main').on('click', '.room', function(){
+
+
+  $('#main').on('click', '.rooms', function(){
+
     var room = $(this).attr('id');
+    message.roomname = room;
     var roomTitle = $("<p>Welcome to " + room + "!</p>").addClass('main');
     $('.main').remove();
     $('h1').append(roomTitle);
@@ -184,12 +185,26 @@ $(document).ready(function(event){
     });
   });
 
+  // $('.build').on('click',function(){
+  //   $('.main').remove();
+  //   var input = $("<input>").attr("placeholder", "name your room").addClass('main').addClass('send');
+  //   $('nav').append(input);
+
+  //   $('nav').on('click', '.send', function(){
+  //      var newRoom = $('.send').val();
+  //      message.roomname = newRoom;
+  //      send(message);
+  //      $('.send').val('');
+  //   });
+  // });
 });
 
 
 
 //<script> $('body').css('background-color', 'red') </script>
 
-
+  // var roomCreator = $("<input>").attr('placeholder', 'name your room');
+  // console.log(roomCreator);
+  // $('#main').append(roomCreator);
 
 

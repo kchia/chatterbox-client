@@ -185,26 +185,20 @@ $(document).ready(function(event){
     });
   });
 
-  // $('.build').on('click',function(){
-  //   $('.main').remove();
-  //   var input = $("<input>").attr("placeholder", "name your room").addClass('main').addClass('send');
-  //   $('nav').append(input);
+  $('.build').on('click',function(){
+    $('.main').remove();
+    var input = $("<input>").attr("placeholder", "name your room then click this box").addClass('main').addClass('send');
+    $('nav').append(input);
 
-  //   $('nav').on('click', '.send', function(){
-  //      var newRoom = $('.send').val();
-  //      message.roomname = newRoom;
-  //      send(message);
-  //      $('.send').val('');
-  //   });
-  // });
+    $('nav').on('click', '.send', function(){
+       var newRoom = $('.send').val();
+       message.roomname = newRoom;
+       send(message);
+       $('.send').val('');
+    });
+  });
 });
 
 
-
-//<script> $('body').css('background-color', 'red') </script>
-
-  // var roomCreator = $("<input>").attr('placeholder', 'name your room');
-  // console.log(roomCreator);
-  // $('#main').append(roomCreator);
 
 
